@@ -41,9 +41,10 @@ export default async function Dashboard() {
   const title = p?.title || "Beginner";
   const nextLevelXp = xpToNextLevel(totalXp);
 
+  const now = new Date();
   const daysSinceStart = p?.startDate
     ? Math.floor(
-        (Date.now() - new Date(p.startDate).getTime()) / (1000 * 60 * 60 * 24)
+        (now.getTime() - new Date(p.startDate).getTime()) / (1000 * 60 * 60 * 24)
       )
     : 0;
 

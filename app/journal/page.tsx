@@ -167,7 +167,7 @@ export default function JournalPage() {
         <div className="card p-6 border-success/20">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-success text-lg">✓</span>
-            <h2 className="text-sm font-medium text-success">Today's reflection logged</h2>
+            <h2 className="text-sm font-medium text-success">Today&apos;s reflection logged</h2>
           </div>
           <p className="text-sm text-foreground-secondary">
             {todayEntry?.entry || entry}

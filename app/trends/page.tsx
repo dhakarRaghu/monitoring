@@ -13,12 +13,6 @@ import {
 } from "recharts";
 import { CATEGORIES, CATEGORY_LABELS, AREA_LABELS, type GrowthArea } from "@/lib/types";
 
-const CATEGORY_COLORS: Record<string, string> = {
-  core_habits: "#6366f1",
-  technical: "#22c55e",
-  growth: "#eab308",
-  professional: "#ec4899",
-};
 
 const AREA_COLORS = [
   "#6366f1", "#818cf8", "#a5b4fc", "#c7d2fe",

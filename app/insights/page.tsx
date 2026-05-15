@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { dailyReviews, sessionScores, sessions } from "@/lib/schema";
 import { desc, gte, eq } from "drizzle-orm";
-import { AREA_LABELS, CATEGORIES, type GrowthArea } from "@/lib/types";
+import { AREA_LABELS, type GrowthArea } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 

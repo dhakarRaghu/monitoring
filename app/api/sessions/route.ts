@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { sessions, sessionScores, sessionObservations, learningQueue } from "@/lib/schema";
-import { desc, eq, inArray } from "drizzle-orm";
+import { desc, inArray } from "drizzle-orm";
 
 export async function GET() {
   const allSessions = await db
