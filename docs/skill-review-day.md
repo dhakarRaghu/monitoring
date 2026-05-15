@@ -9,10 +9,10 @@ When the user invokes /review-day, generate the most honest, comprehensive daily
 Check what was logged today:
 ```bash
 # Today's sessions
-curl -s http://localhost:3000/api/sessions
+curl -s https://raghu-monitoring.vercel.app/api/sessions
 
 # Today's journal entry (user's own reflection)
-curl -s "http://localhost:3000/api/journal?date=$(date +%Y-%m-%d)"
+curl -s "https://raghu-monitoring.vercel.app/api/journal?date=$(date +%Y-%m-%d)"
 ```
 
 **IMPORTANT:** If the user wrote a journal entry today, READ IT CAREFULLY. Their self-reflection is gold:
@@ -135,10 +135,10 @@ Look across the day (and memory of past sessions if available):
 ```bash
 # Get yesterday's data for comparison
 YESTERDAY=$(date -v-1d +%Y-%m-%d 2>/dev/null || date -d "yesterday" +%Y-%m-%d)
-curl -s "http://localhost:3000/api/daily?date=$YESTERDAY"
+curl -s "https://raghu-monitoring.vercel.app/api/daily?date=$YESTERDAY"
 
 # Post today's review
-curl -X POST http://localhost:3000/api/daily \
+curl -X POST https://raghu-monitoring.vercel.app/api/daily \
   -H "Content-Type: application/json" \
   -d '{
     "date": "<today YYYY-MM-DD>",
@@ -158,7 +158,7 @@ curl -X POST http://localhost:3000/api/daily \
   }'
 
 # Update profile (XP + streak)
-curl -X PATCH http://localhost:3000/api/profile \
+curl -X PATCH https://raghu-monitoring.vercel.app/api/profile \
   -H "Content-Type: application/json" \
   -d '{
     "xpEarned": <total XP>,
@@ -178,7 +178,7 @@ After saving, check if any achievements should unlock:
 
 If unlocked:
 ```bash
-curl -X POST http://localhost:3000/api/achievements \
+curl -X POST https://raghu-monitoring.vercel.app/api/achievements \
   -H "Content-Type: application/json" \
   -d '{"slug": "<achievement-slug>"}'
 ```
@@ -188,7 +188,7 @@ curl -X POST http://localhost:3000/api/achievements \
 If the user wrote a journal entry today, update it with personalized guidance based on what they shared + today's scores:
 
 ```bash
-curl -X POST http://localhost:3000/api/journal \
+curl -X POST https://raghu-monitoring.vercel.app/api/journal \
   -H "Content-Type: application/json" \
   -d '{
     "date": "<today>",

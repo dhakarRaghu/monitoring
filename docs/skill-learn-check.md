@@ -77,7 +77,7 @@ If they used a database transaction:
 ### Step 4: Save results
 
 ```bash
-curl -X POST http://localhost:3000/api/sessions \
+curl -X POST https://raghu-monitoring.vercel.app/api/sessions \
   -H "Content-Type: application/json" \
   -d '{
     "date": "YYYY-MM-DD",

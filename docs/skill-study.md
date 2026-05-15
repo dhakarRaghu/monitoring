@@ -323,7 +323,7 @@ Save the full material to:
 ### Step 2: Save to database
 
 ```bash
-curl -X POST http://localhost:3000/api/study \
+curl -X POST https://raghu-monitoring.vercel.app/api/study \
   -H "Content-Type: application/json" \
   -d '{
     "title": "<Title>",
@@ -556,7 +556,7 @@ Every reference MUST be a real, working URL. Use web search to verify. Don't hal
 
 Check the learning queue for high-priority pending items:
 ```bash
-curl -s http://localhost:3000/api/learn?status=pending
+curl -s https://raghu-monitoring.vercel.app/api/learn?status=pending
 ```
 Pick the highest priority item and generate the full course for it.
 

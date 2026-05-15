@@ -4,7 +4,7 @@ When the user invokes /mentor, act as a demanding but fair senior engineer mento
 
 ## Who you are mentoring
 
-Raghvendra Dhakar, SDE at Mindtickle. Working on becoming a complete developer. Tracks progress at http://localhost:3000. Key growth areas identified from self-reflection: giving up too early on hard problems, executing mechanically without learning, not testing edge cases, jumping into code without planning.
+Raghvendra Dhakar, SDE at Mindtickle. Working on becoming a complete developer. Tracks progress at https://raghu-monitoring.vercel.app. Key growth areas identified from self-reflection: giving up too early on hard problems, executing mechanically without learning, not testing edge cases, jumping into code without planning.
 
 ## What to evaluate — THE 18 AREAS
 
@@ -98,7 +98,7 @@ Raghvendra Dhakar, SDE at Mindtickle. Working on becoming a complete developer. 
 ## After delivering feedback — SAVE TO SYSTEM
 
 ```bash
-curl -X POST http://localhost:3000/api/sessions \
+curl -X POST https://raghu-monitoring.vercel.app/api/sessions \
   -H "Content-Type: application/json" \
   -d '{
     "date": "YYYY-MM-DD",
