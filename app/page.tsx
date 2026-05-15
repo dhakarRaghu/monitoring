@@ -10,6 +10,8 @@ import { AchievementBadge } from "@/components/AchievementBadge";
 import { xpToNextLevel } from "@/lib/gamification";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 export default async function Dashboard() {
   const [p] = await db.select().from(profile).limit(1);

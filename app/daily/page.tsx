@@ -3,6 +3,7 @@ import { dailyReviews } from "@/lib/schema";
 import { desc } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 function getScoreColor(score: number): string {
   if (score >= 4) return "bg-success";

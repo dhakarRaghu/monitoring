@@ -4,6 +4,7 @@ import { desc, gte, eq } from "drizzle-orm";
 import { AREA_LABELS, type GrowthArea } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function InsightsPage() {
   const thirtyDaysAgo = new Date();

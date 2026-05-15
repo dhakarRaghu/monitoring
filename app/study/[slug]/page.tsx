@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface Section {
   title: string;
