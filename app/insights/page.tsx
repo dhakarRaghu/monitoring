@@ -183,7 +183,7 @@ export default async function InsightsPage() {
                     {pendingLearning.map((item) => (
                       <Link
                         key={item.id}
-                        href={`/study/${item.topic.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`}
+                        href={`/learn/${item.topic.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`}
                         className="flex items-center justify-between py-1 group"
                       >
                         <span className="text-sm text-foreground-secondary group-hover:text-accent-light transition-colors">

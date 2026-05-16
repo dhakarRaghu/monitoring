@@ -41,8 +41,9 @@ export default function StudyPage() {
   const [filter, setFilter] = useState<string>("all");
 
   useEffect(() => {
-    const url = filter === "all" ? "/api/study" : `/api/study?status=${filter}`;
-    fetch(url)
+    const params = new URLSearchParams({ excludeSource: "mentor" });
+    if (filter !== "all") params.set("status", filter);
+    fetch(`/api/study?${params}`)
       .then((r) => r.json())
       .then(setMaterials);
   }, [filter]);

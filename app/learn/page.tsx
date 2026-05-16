@@ -158,7 +158,7 @@ function Section({
               {item.status === "in_progress" && (
                 <>
                   <Link
-                    href={`/study/${getStudySlug(item.topic)}`}
+                    href={`/learn/${getStudySlug(item.topic)}`}
                     className="text-xs px-3 py-1 rounded-lg bg-primary/10 text-primary-light hover:bg-primary/20"
                   >
                     Learn
@@ -173,7 +173,7 @@ function Section({
               )}
               {item.status === "completed" && (
                 <Link
-                  href={`/study/${getStudySlug(item.topic)}`}
+                  href={`/learn/${getStudySlug(item.topic)}`}
                   className="text-xs px-3 py-1 rounded-lg bg-success/10 text-success hover:bg-success/20"
                 >
                   Review ✓

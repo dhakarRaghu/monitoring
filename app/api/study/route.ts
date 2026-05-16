@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { studyMaterials } from "@/lib/schema";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, ne, sql } from "drizzle-orm";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -16,8 +16,13 @@ export async function GET(request: Request) {
     return Response.json(material || null);
   }
 
+  const excludeSource = searchParams.get("excludeSource");
+
   let query = db.select().from(studyMaterials);
 
+  if (excludeSource) {
+    query = query.where(ne(studyMaterials.source, excludeSource)) as typeof query;
+  }
   if (status) {
     query = query.where(eq(studyMaterials.status, status)) as typeof query;
   }
