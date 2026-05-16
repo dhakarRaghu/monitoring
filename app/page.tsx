@@ -64,16 +64,16 @@ export default function Dashboard() {
     return (
       <div className="space-y-6 animate-fade-in">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground tracking-tight">Dashboard</h1>
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight page-section-header">Dashboard</h1>
           <p className="text-sm text-foreground-tertiary mt-1">Loading...</p>
         </div>
         <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-2 card p-5 h-24 animate-pulse bg-card-elevated" />
-          <div className="card p-5 h-24 animate-pulse bg-card-elevated" />
+          <div className="col-span-2 card p-5 h-24 bg-card-elevated/50 animate-pulse" />
+          <div className="card p-5 h-24 bg-card-elevated/50 animate-pulse" />
         </div>
         <div className="grid grid-cols-4 gap-3">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="card p-4 h-24 animate-pulse bg-card-elevated" />
+            <div key={i} className="card p-4 h-[100px] bg-card-elevated/50 animate-pulse" style={{ animationDelay: `${i * 100}ms` }} />
           ))}
         </div>
       </div>
@@ -104,15 +104,15 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground tracking-tight">
+        <h1 className="text-2xl font-semibold text-foreground tracking-tight page-section-header">
           Dashboard
         </h1>
-        <p className="text-sm text-foreground-tertiary mt-1">
+        <p className="text-[13px] text-foreground-tertiary mt-1">
           Your developer growth at a glance
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4 stagger-children">
         <div className="col-span-2">
           <XPBar
             currentXp={totalXp}
@@ -141,10 +141,10 @@ export default function Dashboard() {
 
       {recentAchievements.length > 0 && (
         <div>
-          <h2 className="text-xs font-semibold text-foreground-tertiary uppercase tracking-wider mb-3">
+          <h2 className="text-[11px] font-semibold text-foreground-tertiary uppercase tracking-widest mb-3">
             Recent Achievements
           </h2>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3 stagger-children">
             {recentAchievements.map((a) => (
               <AchievementBadge
                 key={a.slug}
@@ -162,26 +162,30 @@ export default function Dashboard() {
 
       {!latestReview && (
         <div className="card p-10 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-glow via-transparent to-purple-500/5 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-transparent to-accent/[0.02] pointer-events-none" />
           <div className="relative">
             <div className="w-16 h-16 mx-auto rounded-2xl bg-primary-glow-strong flex items-center justify-center mb-4 animate-pulse-glow">
-              <span className="text-3xl">🚀</span>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-primary-light">
+                <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="text-lg font-semibold text-foreground tracking-tight">
               Ready to start tracking
             </h2>
-            <p className="text-sm text-foreground-secondary mt-2 max-w-sm mx-auto leading-relaxed">
+            <p className="text-[13px] text-foreground-secondary mt-2 max-w-sm mx-auto leading-relaxed">
               Use{" "}
-              <code className="text-primary-light bg-primary-glow px-1.5 py-0.5 rounded text-xs font-medium">
+              <code className="text-primary-light font-mono text-[11px] bg-primary-glow px-1.5 py-0.5 rounded">
                 /mentor
               </code>{" "}
               during coding sessions and{" "}
-              <code className="text-primary-light bg-primary-glow px-1.5 py-0.5 rounded text-xs font-medium">
+              <code className="text-primary-light font-mono text-[11px] bg-primary-glow px-1.5 py-0.5 rounded">
                 /review-day
               </code>{" "}
               at the end of each day.
             </p>
-            <div className="mt-6 flex items-center justify-center gap-6 text-xs text-foreground-tertiary">
+            <div className="mt-6 flex items-center justify-center gap-6 text-[11px] text-foreground-tertiary">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-success" />
                 18 growth areas

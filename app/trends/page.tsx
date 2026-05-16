@@ -15,12 +15,12 @@ import { CATEGORIES, CATEGORY_LABELS, AREA_LABELS, type GrowthArea } from "@/lib
 
 
 const AREA_COLORS = [
-  "#6366f1", "#818cf8", "#a5b4fc", "#c7d2fe",
-  "#22c55e", "#4ade80", "#86efac",
-  "#eab308", "#facc15", "#fde047",
-  "#ec4899", "#f472b6", "#f9a8d4",
-  "#ef4444", "#f87171", "#fca5a5",
-  "#06b6d4", "#67e8f9",
+  "#7c5cfc", "#9b82ff", "#b8a4ff", "#d4c8ff",
+  "#34d399", "#5ee8cc", "#86efac",
+  "#fbbf24", "#fcd34d", "#fde68a",
+  "#f472b6", "#fb7185", "#fda4af",
+  "#f87171", "#fca5a5", "#fecaca",
+  "#60a5fa", "#93c5fd",
 ];
 
 type TimeRange = "7" | "30" | "90" | "all";
@@ -43,21 +43,21 @@ export default function TrendsPage() {
       : CATEGORIES[selectedCategory as keyof typeof CATEGORIES] || [];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Trends</h1>
-          <p className="text-muted text-sm mt-1">Track your progress over time</p>
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight page-section-header">Trends</h1>
+          <p className="text-[13px] text-foreground-tertiary mt-1">Track your progress over time</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1.5 bg-card-elevated rounded-xl p-1 border border-card-border">
           {(["7", "30", "90", "all"] as TimeRange[]).map((r) => (
             <button
               key={r}
               onClick={() => setRange(r)}
-              className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+              className={`px-3 py-1.5 text-[11px] font-medium rounded-lg transition-all duration-150 ${
                 range === r
-                  ? "bg-accent text-white"
-                  : "bg-card border border-card-border text-muted hover:text-foreground"
+                  ? "bg-primary text-white shadow-sm shadow-primary/20"
+                  : "text-foreground-tertiary hover:text-foreground"
               }`}
             >
               {r === "all" ? "All" : `${r}d`}
@@ -66,13 +66,13 @@ export default function TrendsPage() {
         </div>
       </div>
 
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-1.5 flex-wrap">
         <button
           onClick={() => setSelectedCategory("all")}
-          className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+          className={`px-3 py-1.5 text-[11px] font-medium rounded-lg transition-all duration-150 ${
             selectedCategory === "all"
-              ? "bg-accent text-white"
-              : "bg-card border border-card-border text-muted hover:text-foreground"
+              ? "bg-primary/[0.12] text-primary-light border border-primary/20"
+              : "bg-card border border-card-border text-foreground-tertiary hover:text-foreground hover:border-card-border-hover"
           }`}
         >
           All Areas
@@ -81,10 +81,10 @@ export default function TrendsPage() {
           <button
             key={key}
             onClick={() => setSelectedCategory(key)}
-            className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+            className={`px-3 py-1.5 text-[11px] font-medium rounded-lg transition-all duration-150 ${
               selectedCategory === key
-                ? "bg-accent text-white"
-                : "bg-card border border-card-border text-muted hover:text-foreground"
+                ? "bg-primary/[0.12] text-primary-light border border-primary/20"
+                : "bg-card border border-card-border text-foreground-tertiary hover:text-foreground hover:border-card-border-hover"
             }`}
           >
             {label}
@@ -93,36 +93,50 @@ export default function TrendsPage() {
       </div>
 
       {data.trendData.length === 0 ? (
-        <div className="bg-card border border-card-border rounded-xl p-8 text-center">
-          <p className="text-4xl mb-3">📈</p>
-          <h2 className="text-lg font-medium text-foreground">No trend data yet</h2>
-          <p className="text-muted text-sm mt-2">
-            Complete a few /mentor sessions to see your growth charts.
-          </p>
+        <div className="card p-10 text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] via-transparent to-transparent pointer-events-none" />
+          <div className="relative">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-card-elevated flex items-center justify-center mb-4">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-foreground-tertiary">
+                <path d="M23 6l-9.5 9.5-5-5L1 18" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M17 6h6v6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <h2 className="text-lg font-semibold text-foreground">No trend data yet</h2>
+            <p className="text-[13px] text-foreground-tertiary mt-2">
+              Complete a few <code className="text-primary-light font-mono text-[11px] bg-primary-glow px-1.5 py-0.5 rounded">/mentor</code> sessions to see your growth charts.
+            </p>
+          </div>
         </div>
       ) : (
-        <div className="bg-card border border-card-border rounded-xl p-5">
+        <div className="card p-6">
           <ResponsiveContainer width="100%" height={400}>
             <LineChart data={data.trendData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#1f1f2e" strokeOpacity={0.6} />
               <XAxis
                 dataKey="date"
-                tick={{ fill: "#71717a", fontSize: 11 }}
+                tick={{ fill: "#6b6b7b", fontSize: 11 }}
                 tickFormatter={(v) => new Date(v).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                axisLine={{ stroke: "#1f1f2e" }}
+                tickLine={{ stroke: "#1f1f2e" }}
               />
               <YAxis
                 domain={[0, 5]}
-                tick={{ fill: "#71717a", fontSize: 11 }}
+                tick={{ fill: "#6b6b7b", fontSize: 11 }}
+                axisLine={{ stroke: "#1f1f2e" }}
+                tickLine={{ stroke: "#1f1f2e" }}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "#141419",
-                  border: "1px solid #27272a",
-                  borderRadius: "8px",
-                  color: "#e4e4e7",
+                  backgroundColor: "#12121a",
+                  border: "1px solid #1f1f2e",
+                  borderRadius: "12px",
+                  color: "#f0f0f5",
+                  fontSize: "12px",
+                  boxShadow: "0 8px 16px 0 rgba(0,0,0,0.4)",
                 }}
               />
-              <Legend />
+              <Legend wrapperStyle={{ fontSize: "11px" }} />
               {areas.map((area, i) => (
                 <Line
                   key={area}

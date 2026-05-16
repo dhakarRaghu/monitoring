@@ -19,9 +19,9 @@ export function AchievementBadge({
 }: AchievementBadgeProps) {
   return (
     <div
-      className={`card p-4 transition-all duration-200 ${
+      className={`card-interactive p-4 ${
         unlocked
-          ? "border-primary/30 bg-gradient-to-br from-primary-glow to-transparent hover:border-primary/50"
+          ? "border-primary/20 bg-gradient-to-br from-primary/[0.04] to-transparent"
           : "opacity-40 grayscale hover:opacity-60"
       }`}
     >
@@ -34,8 +34,8 @@ export function AchievementBadge({
           <span className="text-lg">{icon}</span>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-medium text-sm text-foreground truncate">{name}</p>
-          <p className="text-[11px] text-foreground-tertiary mt-0.5 line-clamp-2">
+          <p className="font-medium text-[13px] text-foreground truncate">{name}</p>
+          <p className="text-[11px] text-foreground-tertiary mt-0.5 line-clamp-2 leading-relaxed">
             {description}
           </p>
           {unlocked && unlockedAt && (
@@ -44,7 +44,7 @@ export function AchievementBadge({
             </p>
           )}
           {!unlocked && (
-            <p className="text-[11px] text-primary-light mt-1.5 font-medium">
+            <p className="text-[11px] text-primary-light mt-1.5 font-medium font-mono">
               +{xpReward} XP
             </p>
           )}

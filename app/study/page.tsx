@@ -20,9 +20,9 @@ interface StudyMaterial {
 }
 
 const DIFFICULTY_COLORS: Record<string, string> = {
-  beginner: "bg-success-bg text-success",
-  intermediate: "bg-warning-bg text-warning",
-  advanced: "bg-danger-bg text-danger",
+  beginner: "bg-success/10 text-success border-success/20",
+  intermediate: "bg-warning/10 text-warning border-warning/20",
+  advanced: "bg-danger/10 text-danger border-danger/20",
 };
 
 function getTopicFromSlug(slug: string): string {
@@ -48,7 +48,6 @@ export default function StudyPage() {
       .then(setMaterials);
   }, [filter]);
 
-  // Group by topic
   const grouped: Record<string, StudyMaterial[]> = {};
   for (const m of materials) {
     const topic = getTopicFromSlug(m.slug);
@@ -56,7 +55,6 @@ export default function StudyPage() {
     grouped[topic].push(m);
   }
 
-  // Sort phases within each topic
   for (const topic of Object.keys(grouped)) {
     grouped[topic].sort((a, b) => {
       const phaseA = a.slug.match(/phase-(\d+)/)?.[1];
@@ -74,22 +72,26 @@ export default function StudyPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground tracking-tight">
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight page-section-header">
             Study Materials
           </h1>
-          <p className="text-sm text-foreground-tertiary mt-1">
-            {totalMaterials} materials · {completedCount} completed · {inProgressCount} in progress
+          <p className="text-[13px] text-foreground-tertiary mt-1">
+            <span className="font-mono">{totalMaterials}</span> materials
+            <span className="mx-1.5 text-card-border-hover">/</span>
+            <span className="font-mono">{completedCount}</span> completed
+            <span className="mx-1.5 text-card-border-hover">/</span>
+            <span className="font-mono">{inProgressCount}</span> in progress
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1.5 bg-card-elevated rounded-xl p-1 border border-card-border">
           {["all", "unread", "in_progress", "completed"].map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-all duration-150 ${
+              className={`px-3 py-1.5 text-[11px] font-medium rounded-lg transition-all duration-150 ${
                 filter === f
-                  ? "bg-primary text-white shadow-sm"
-                  : "bg-card border border-card-border text-foreground-secondary hover:text-foreground hover:border-card-border-hover"
+                  ? "bg-primary text-white shadow-sm shadow-primary/20"
+                  : "text-foreground-tertiary hover:text-foreground"
               }`}
             >
               {f === "in_progress"
@@ -102,17 +104,19 @@ export default function StudyPage() {
 
       {materials.length === 0 ? (
         <div className="card p-10 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-info-bg via-transparent to-primary-glow pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-info/[0.03] via-transparent to-primary/[0.02] pointer-events-none" />
           <div className="relative">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-info-bg flex items-center justify-center mb-4">
-              <span className="text-3xl">📖</span>
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-card-elevated flex items-center justify-center mb-4">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-foreground-tertiary">
+                <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2V3zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7V3z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
             <h2 className="text-lg font-semibold text-foreground">
               No study materials yet
             </h2>
-            <p className="text-sm text-foreground-secondary mt-2 max-w-md mx-auto leading-relaxed">
+            <p className="text-[13px] text-foreground-tertiary mt-2 max-w-md mx-auto leading-relaxed">
               Use{" "}
-              <code className="text-primary-light bg-primary-glow px-1.5 py-0.5 rounded text-xs font-medium">
+              <code className="text-primary-light font-mono text-[11px] bg-primary-glow px-1.5 py-0.5 rounded">
                 /study kafka
               </code>{" "}
               to generate a full deep-dive course on any topic.
@@ -120,7 +124,7 @@ export default function StudyPage() {
           </div>
         </div>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-6">
           {Object.entries(grouped).map(([topic, items]) => (
             <TopicGroup key={topic} topic={topic} materials={items} />
           ))}
@@ -153,49 +157,51 @@ function TopicGroup({
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary-glow-strong flex items-center justify-center">
-            <span className="text-lg">📂</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-primary-light">
+              <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2v11z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </div>
           <div>
-            <h2 className="text-base font-semibold text-foreground">
+            <h2 className="text-[14px] font-semibold text-foreground tracking-tight">
               {getTopicDisplayName(topic)}
             </h2>
-            <p className="text-xs text-foreground-tertiary">
-              {materials.length} phases · ~{totalMinutes} min total · {completedCount}/{materials.length} done
+            <p className="text-[11px] text-foreground-tertiary mt-0.5 font-mono">
+              {materials.length} phases · ~{totalMinutes}m · {completedCount}/{materials.length} done
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="w-24 h-2 bg-background-secondary rounded-full overflow-hidden">
+          <div className="w-24 h-1.5 bg-background-secondary rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-primary to-primary-light rounded-full transition-all duration-500"
+              className="h-full bg-gradient-to-r from-primary to-primary-light rounded-full transition-all duration-700"
               style={{ width: `${overallProgress}%` }}
             />
           </div>
-          <span className="text-xs text-foreground-tertiary font-medium">
+          <span className="text-[11px] text-foreground-tertiary font-mono font-medium min-w-[32px] text-right">
             {overallProgress}%
           </span>
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {materials.map((material, index) => (
           <Link
             key={material.id}
             href={`/study/${material.slug}`}
-            className="flex items-center gap-4 px-4 py-3 rounded-lg border border-card-border hover:border-primary/30 hover:bg-card-elevated transition-all duration-150 group"
+            className="flex items-center gap-4 px-4 py-3 rounded-xl border border-card-border hover:border-primary/20 hover:bg-card-elevated/50 transition-all duration-150 group"
           >
-            <div className="w-7 h-7 rounded-lg bg-card-elevated flex items-center justify-center text-xs font-bold text-foreground-tertiary group-hover:bg-primary-glow group-hover:text-primary-light transition-colors">
-              {index}
+            <div className="w-7 h-7 rounded-lg bg-card-elevated flex items-center justify-center text-[11px] font-bold text-foreground-tertiary group-hover:bg-primary-glow group-hover:text-primary-light transition-all font-mono">
+              {index + 1}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-medium text-foreground group-hover:text-primary-light transition-colors truncate">
+                <h3 className="text-[13px] font-medium text-foreground group-hover:text-primary-light transition-colors truncate">
                   {material.title}
                 </h3>
                 {material.difficulty && (
                   <span
-                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${
-                      DIFFICULTY_COLORS[material.difficulty] || "bg-card-elevated text-foreground-tertiary"
+                    className={`text-[9px] px-1.5 py-0.5 rounded-md font-medium uppercase tracking-wider shrink-0 border ${
+                      DIFFICULTY_COLORS[material.difficulty] || "bg-card-elevated text-foreground-tertiary border-card-border"
                     }`}
                   >
                     {material.difficulty}
@@ -203,24 +209,24 @@ function TopicGroup({
                 )}
               </div>
               {material.summary && (
-                <p className="text-xs text-foreground-tertiary mt-0.5 truncate">
+                <p className="text-[11px] text-foreground-tertiary mt-0.5 truncate">
                   {material.summary}
                 </p>
               )}
             </div>
             <div className="flex items-center gap-3 shrink-0">
               {material.estimatedMinutes && (
-                <span className="text-[10px] text-foreground-tertiary">
+                <span className="text-[10px] text-foreground-tertiary font-mono">
                   ~{material.estimatedMinutes}m
                 </span>
               )}
-              <span
-                className={`w-2 h-2 rounded-full ${
+              <div
+                className={`w-2.5 h-2.5 rounded-full ${
                   material.status === "completed"
                     ? "bg-success"
                     : material.status === "in_progress"
                     ? "bg-warning"
-                    : "bg-card-border"
+                    : "bg-card-border-hover"
                 }`}
               />
             </div>

@@ -15,28 +15,32 @@ export function XPBar({ currentXp, xpToNext, level, title }: XPBarProps) {
 
   return (
     <div className="card p-5 relative overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary via-primary-light to-purple-400 opacity-60" />
-      <div className="flex items-baseline justify-between mb-4">
-        <div className="flex items-baseline gap-2">
-          <span className="text-3xl font-bold gradient-text tracking-tight">
-            Lv.{level}
-          </span>
-          <span className="text-sm text-foreground-secondary font-medium">
-            {title}
-          </span>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-transparent to-accent/[0.02]" />
+      <div className="relative">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-primary-glow-strong flex items-center justify-center">
+              <span className="text-2xl font-bold gradient-text">{level}</span>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground tracking-tight">{title}</p>
+              <p className="text-[11px] text-foreground-tertiary mt-0.5">Level {level}</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-sm font-mono font-medium text-foreground">
+              {currentXp.toLocaleString()}
+              <span className="text-foreground-tertiary"> / {xpToNext.toLocaleString()}</span>
+            </p>
+            <p className="text-[11px] text-foreground-tertiary mt-0.5">XP to next level</p>
+          </div>
         </div>
-        <div className="text-right">
-          <span className="text-sm font-mono text-foreground-secondary">
-            {currentXp}
-          </span>
-          <span className="text-sm text-foreground-tertiary"> / {xpToNext} XP</span>
+        <div className="w-full bg-background-secondary rounded-full h-2 overflow-hidden">
+          <div
+            className="progress-bar h-full rounded-full transition-all duration-1000 ease-out"
+            style={{ width: `${Math.min(100, Math.max(2, progress))}%` }}
+          />
         </div>
-      </div>
-      <div className="w-full bg-background-secondary rounded-full h-2.5 overflow-hidden">
-        <div
-          className="progress-bar h-full rounded-full transition-all duration-700 ease-out"
-          style={{ width: `${Math.min(100, Math.max(2, progress))}%` }}
-        />
       </div>
     </div>
   );

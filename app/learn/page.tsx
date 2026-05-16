@@ -51,23 +51,23 @@ export default function LearnPage() {
   const completed = sorted.filter((i) => i.status === "completed");
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Learning Queue</h1>
-          <p className="text-muted text-sm mt-1">
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight page-section-header">Learning Queue</h1>
+          <p className="text-[13px] text-foreground-tertiary mt-1">
             Topics to study deeper, identified during sessions
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1.5 bg-card-elevated rounded-xl p-1 border border-card-border">
           {["all", "pending", "in_progress", "completed"].map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+              className={`px-3 py-1.5 text-[11px] font-medium rounded-lg transition-all duration-150 ${
                 filter === f
-                  ? "bg-accent text-white"
-                  : "bg-card border border-card-border text-muted hover:text-foreground"
+                  ? "bg-primary text-white shadow-sm shadow-primary/20"
+                  : "text-foreground-tertiary hover:text-foreground"
               }`}
             >
               {f === "in_progress" ? "In Progress" : f.charAt(0).toUpperCase() + f.slice(1)}
@@ -77,14 +77,23 @@ export default function LearnPage() {
       </div>
 
       {items.length === 0 ? (
-        <div className="bg-card border border-card-border rounded-xl p-8 text-center">
-          <p className="text-4xl mb-3">📚</p>
-          <h2 className="text-lg font-medium text-foreground">
-            Learning queue is empty
-          </h2>
-          <p className="text-muted text-sm mt-2">
-            When /mentor identifies things you should study deeper, they will appear here.
-          </p>
+        <div className="card p-10 text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/[0.03] via-transparent to-primary/[0.02] pointer-events-none" />
+          <div className="relative">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-card-elevated flex items-center justify-center mb-4">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-foreground-tertiary">
+                <path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M8 7h8M8 11h6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <h2 className="text-lg font-semibold text-foreground">
+              Learning queue is empty
+            </h2>
+            <p className="text-[13px] text-foreground-tertiary mt-2 max-w-sm mx-auto">
+              When <code className="text-primary-light font-mono text-[11px] bg-primary-glow px-1.5 py-0.5 rounded">/mentor</code> identifies things you should study deeper, they will appear here.
+            </p>
+          </div>
         </div>
       ) : (
         <div className="space-y-6">
@@ -118,40 +127,42 @@ function Section({
 
   return (
     <div>
-      <h2 className="text-sm font-medium text-muted mb-3">{title} ({items.length})</h2>
+      <h2 className="text-[11px] font-semibold text-foreground-tertiary uppercase tracking-widest mb-3">
+        {title} <span className="text-foreground-tertiary/60">({items.length})</span>
+      </h2>
       <div className="space-y-2">
         {items.map((item) => (
           <Link
             key={item.id}
             href={`/learn/${getStudySlug(item.topic)}`}
-            className="bg-card border border-card-border rounded-xl p-4 flex items-center justify-between hover:border-primary/30 hover:bg-card-elevated transition-all cursor-pointer block"
+            className="card-interactive p-4 flex items-center justify-between block"
           >
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <span
-                  className={`text-xs px-2 py-0.5 rounded-full ${
+                  className={`text-[10px] px-2 py-0.5 rounded-md font-medium uppercase tracking-wider ${
                     item.priority === "high"
-                      ? "bg-danger/20 text-danger"
+                      ? "bg-danger/10 text-danger border border-danger/20"
                       : item.priority === "medium"
-                      ? "bg-warning/20 text-warning"
-                      : "bg-muted/20 text-muted"
+                      ? "bg-warning/10 text-warning border border-warning/20"
+                      : "bg-card-elevated text-foreground-tertiary border border-card-border"
                   }`}
                 >
                   {item.priority}
                 </span>
-                <h3 className="text-sm font-medium text-foreground truncate">
+                <h3 className="text-[13px] font-medium text-foreground truncate">
                   {item.topic}
                 </h3>
               </div>
               {item.reason && (
-                <p className="text-xs text-muted mt-1">{item.reason}</p>
+                <p className="text-[11px] text-foreground-tertiary mt-1.5 ml-[calc(2rem+10px)]">{item.reason}</p>
               )}
             </div>
             <div className="flex gap-2 ml-4" onClick={(e) => e.preventDefault()}>
               {item.status === "pending" && (
                 <button
                   onClick={(e) => { e.stopPropagation(); onUpdate(item.id, "in_progress"); }}
-                  className="text-xs px-3 py-1 rounded-lg bg-accent/10 text-accent-light hover:bg-accent/20"
+                  className="text-[11px] px-3.5 py-1.5 rounded-lg bg-primary/[0.08] text-primary-light border border-primary/15 hover:bg-primary/[0.15] hover:border-primary/30 transition-all font-medium"
                 >
                   Start
                 </button>
@@ -159,14 +170,17 @@ function Section({
               {item.status === "in_progress" && (
                 <button
                   onClick={(e) => { e.stopPropagation(); onUpdate(item.id, "completed"); }}
-                  className="text-xs px-3 py-1 rounded-lg bg-success/10 text-success hover:bg-success/20"
+                  className="text-[11px] px-3.5 py-1.5 rounded-lg bg-success/[0.08] text-success border border-success/15 hover:bg-success/[0.15] hover:border-success/30 transition-all font-medium"
                 >
                   Done
                 </button>
               )}
               {item.status === "completed" && (
-                <span className="text-xs px-3 py-1 rounded-lg bg-success/10 text-success">
-                  Review ✓
+                <span className="text-[11px] px-3.5 py-1.5 rounded-lg bg-success/[0.08] text-success border border-success/15 font-medium flex items-center gap-1.5">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" className="text-success">
+                    <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Done
                 </span>
               )}
             </div>

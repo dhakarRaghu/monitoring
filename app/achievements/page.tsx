@@ -31,17 +31,17 @@ export default function AchievementsPage() {
   const categories = [...new Set(achievements.map((a) => a.category))];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Achievements</h1>
-          <p className="text-muted text-sm mt-1">
-            {unlocked.length} / {achievements.length} unlocked
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight page-section-header">Achievements</h1>
+          <p className="text-[13px] text-foreground-tertiary mt-1">
+            <span className="font-mono">{unlocked.length}</span> / <span className="font-mono">{achievements.length}</span> unlocked
           </p>
         </div>
         <div className="text-right">
-          <p className="text-sm text-muted">XP from achievements</p>
-          <p className="text-xl font-bold text-accent-light">
+          <p className="text-[11px] text-foreground-tertiary uppercase tracking-wider font-medium">XP from achievements</p>
+          <p className="text-xl font-bold text-primary-light font-mono mt-0.5">
             {totalXpFromAchievements} XP
           </p>
         </div>
@@ -49,10 +49,10 @@ export default function AchievementsPage() {
 
       {unlocked.length > 0 && (
         <div>
-          <h2 className="text-sm font-medium text-success mb-3">
+          <h2 className="text-[11px] font-semibold text-success uppercase tracking-widest mb-3">
             Unlocked ({unlocked.length})
           </h2>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3 stagger-children">
             {unlocked.map((a) => (
               <AchievementBadge
                 key={a.slug}
@@ -73,7 +73,7 @@ export default function AchievementsPage() {
         if (categoryLocked.length === 0) return null;
         return (
           <div key={category}>
-            <h2 className="text-sm font-medium text-muted mb-3 capitalize">
+            <h2 className="text-[11px] font-semibold text-foreground-tertiary uppercase tracking-widest mb-3 capitalize">
               {category} ({categoryLocked.length} remaining)
             </h2>
             <div className="grid grid-cols-3 gap-3">
