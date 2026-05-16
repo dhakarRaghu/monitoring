@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 interface LearningItem {
   id: string;
@@ -111,6 +112,10 @@ function Section({
   items: LearningItem[];
   onUpdate: (id: string, status: string) => void;
 }) {
+  function getStudySlug(topic: string) {
+    return topic.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  }
+
   return (
     <div>
       <h2 className="text-sm font-medium text-muted mb-3">{title} ({items.length})</h2>
@@ -151,15 +156,28 @@ function Section({
                 </button>
               )}
               {item.status === "in_progress" && (
-                <button
-                  onClick={() => onUpdate(item.id, "completed")}
-                  className="text-xs px-3 py-1 rounded-lg bg-success/10 text-success hover:bg-success/20"
-                >
-                  Done
-                </button>
+                <>
+                  <Link
+                    href={`/study/${getStudySlug(item.topic)}`}
+                    className="text-xs px-3 py-1 rounded-lg bg-primary/10 text-primary-light hover:bg-primary/20"
+                  >
+                    Learn
+                  </Link>
+                  <button
+                    onClick={() => onUpdate(item.id, "completed")}
+                    className="text-xs px-3 py-1 rounded-lg bg-success/10 text-success hover:bg-success/20"
+                  >
+                    Done
+                  </button>
+                </>
               )}
               {item.status === "completed" && (
-                <span className="text-xs text-success">✓</span>
+                <Link
+                  href={`/study/${getStudySlug(item.topic)}`}
+                  className="text-xs px-3 py-1 rounded-lg bg-success/10 text-success hover:bg-success/20"
+                >
+                  Review ✓
+                </Link>
               )}
             </div>
           </div>

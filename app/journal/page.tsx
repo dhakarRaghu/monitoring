@@ -26,6 +26,7 @@ export default function JournalPage() {
   const [energy, setEnergy] = useState(3);
   const [saving, setSaving] = useState(false);
   const [todaySaved, setTodaySaved] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   useEffect(() => {
     fetch("/api/journal")
@@ -54,6 +55,7 @@ export default function JournalPage() {
     });
 
     setTodaySaved(true);
+    setEditing(false);
     setSaving(false);
   }
 
@@ -69,10 +71,10 @@ export default function JournalPage() {
       </div>
 
       {/* Today's entry form */}
-      {!todayEntry && !todaySaved ? (
+      {(!todayEntry && !todaySaved) || editing ? (
         <div className="card p-6 space-y-4">
           <h2 className="text-sm font-semibold text-foreground-tertiary uppercase tracking-wider">
-            Today — {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+            {editing ? "Edit" : "Today"} — {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
           </h2>
 
           <div>
@@ -155,19 +157,47 @@ export default function JournalPage() {
             </div>
           </div>
 
-          <button
-            onClick={save}
-            disabled={!entry.trim() || saving}
-            className="px-5 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {saving ? "Saving..." : "Save Today's Reflection"}
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={save}
+              disabled={!entry.trim() || saving}
+              className="px-5 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {saving ? "Saving..." : editing ? "Update Reflection" : "Save Today's Reflection"}
+            </button>
+            {editing && (
+              <button
+                onClick={() => setEditing(false)}
+                className="px-5 py-2 text-sm font-medium text-foreground-tertiary hover:text-foreground rounded-lg border border-card-border transition-colors"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </div>
       ) : (
         <div className="card p-6 border-success/20">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-success text-lg">✓</span>
-            <h2 className="text-sm font-medium text-success">Today&apos;s reflection logged</h2>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-success text-lg">✓</span>
+              <h2 className="text-sm font-medium text-success">Today&apos;s reflection logged</h2>
+            </div>
+            <button
+              onClick={() => {
+                const existing = todayEntry;
+                if (existing) {
+                  setEntry(existing.entry);
+                  setChallenges(existing.challenges || "");
+                  setWins(existing.wins || "");
+                  setMood(existing.mood || "");
+                  setEnergy(existing.energyLevel || 3);
+                }
+                setEditing(true);
+              }}
+              className="text-xs px-3 py-1 rounded-lg bg-card-elevated border border-card-border text-foreground-tertiary hover:text-foreground transition-colors"
+            >
+              Edit
+            </button>
           </div>
           <p className="text-sm text-foreground-secondary">
             {todayEntry?.entry || entry}

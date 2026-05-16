@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { learningQueue } from "@/lib/schema";
+import { learningQueue, studyMaterials } from "@/lib/schema";
 import { desc, eq } from "drizzle-orm";
 
 export async function GET(request: Request) {
@@ -22,6 +22,50 @@ export async function GET(request: Request) {
     .limit(100);
 
   return Response.json(items);
+}
+
+export async function POST(request: Request) {
+  const body = await request.json();
+
+  if (!body.topic) {
+    return Response.json({ error: "topic required" }, { status: 400 });
+  }
+
+  const slug = body.topic.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+  const [item] = await db
+    .insert(learningQueue)
+    .values({
+      sessionId: body.sessionId || null,
+      topic: body.topic,
+      reason: body.reason || null,
+      priority: body.priority || "medium",
+      status: body.studyContent ? "in_progress" : "pending",
+    })
+    .returning();
+
+  if (body.studyContent) {
+    await db
+      .insert(studyMaterials)
+      .values({
+        slug,
+        title: body.topic,
+        category: body.category || "learning-gap",
+        difficulty: body.difficulty || "intermediate",
+        estimatedMinutes: body.estimatedMinutes || 15,
+        tags: body.tags || [],
+        summary: body.reason || null,
+        content: body.studyContent,
+        sections: body.sections || null,
+        source: "mentor",
+        learningQueueId: item.id,
+        status: "unread",
+        progress: 0,
+      })
+      .onConflictDoNothing({ target: studyMaterials.slug });
+  }
+
+  return Response.json({ ...item, studySlug: body.studyContent ? slug : null }, { status: 201 });
 }
 
 export async function PATCH(request: Request) {
