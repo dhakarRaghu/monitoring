@@ -40,22 +40,22 @@ export function ScoreRadar({ data }: ScoreRadarProps) {
       </h3>
       <ResponsiveContainer width="100%" height={220}>
         <RadarChart data={data}>
-          <PolarGrid stroke="#1f1f2e" strokeWidth={0.5} />
+          <PolarGrid stroke="#2a2a2a" strokeWidth={0.5} />
           <PolarAngleAxis
             dataKey="area"
-            tick={{ fill: "#a8a8b8", fontSize: 11, fontWeight: 500 }}
+            tick={{ fill: "#b8b8b8", fontSize: 11, fontWeight: 500 }}
           />
           <Radar
             dataKey="score"
-            stroke="#7c5cfc"
+            stroke="#f5f5f5"
             strokeWidth={2}
             fill="url(#radarGradient)"
             fillOpacity={0.3}
           />
           <defs>
             <linearGradient id="radarGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#9b82ff" stopOpacity={0.4} />
-              <stop offset="100%" stopColor="#7c5cfc" stopOpacity={0.05} />
+              <stop offset="0%" stopColor="#ffffff" stopOpacity={0.3} />
+              <stop offset="100%" stopColor="#737373" stopOpacity={0.05} />
             </linearGradient>
           </defs>
         </RadarChart>

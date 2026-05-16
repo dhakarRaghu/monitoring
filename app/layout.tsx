@@ -32,10 +32,9 @@ export default function RootLayout({
         <Sidebar />
         <main className="h-full flex-1 min-w-0 overflow-y-auto relative">
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-primary/[0.015] rounded-full blur-[120px]" />
-            <div className="absolute bottom-0 left-0 w-[400px] h-[300px] bg-accent/[0.01] rounded-full blur-[100px]" />
+            <div className="absolute top-0 right-0 w-[520px] h-[320px] bg-white/[0.025] rounded-full blur-[130px]" />
           </div>
-          <div className="relative p-8 max-w-[1200px] mx-auto">{children}</div>
+          <div className="relative p-8 max-w-[1240px] mx-auto">{children}</div>
         </main>
       </body>
     </html>

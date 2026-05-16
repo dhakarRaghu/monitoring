@@ -49,15 +49,15 @@ export default function TrendsPage() {
           <h1 className="text-2xl font-semibold text-foreground tracking-tight page-section-header">Trends</h1>
           <p className="text-[13px] text-foreground-tertiary mt-1">Track your progress over time</p>
         </div>
-        <div className="flex gap-1.5 bg-card-elevated rounded-xl p-1 border border-card-border">
+        <div className="segmented-control">
           {(["7", "30", "90", "all"] as TimeRange[]).map((r) => (
             <button
               key={r}
               onClick={() => setRange(r)}
-              className={`px-3 py-1.5 text-[11px] font-medium rounded-lg transition-all duration-150 ${
+              className={`segmented-option ${
                 range === r
-                  ? "bg-primary text-white shadow-sm shadow-primary/20"
-                  : "text-foreground-tertiary hover:text-foreground"
+                  ? "segmented-option-active"
+                  : ""
               }`}
             >
               {r === "all" ? "All" : `${r}d`}

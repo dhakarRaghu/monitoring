@@ -86,7 +86,7 @@ export default function JournalPage() {
                 value={entry}
                 onChange={(e) => setEntry(e.target.value)}
                 placeholder="Write freely... What did you work on? How did you approach it? Where did you struggle? What went well?"
-                className="w-full h-32 bg-background-secondary border border-card-border rounded-xl px-4 py-3 text-[13px] text-foreground placeholder:text-foreground-tertiary/40 resize-none focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all"
+                className="field-control h-32 px-4 py-3 text-[13px] resize-none"
               />
             </div>
 
@@ -99,7 +99,7 @@ export default function JournalPage() {
                   value={challenges}
                   onChange={(e) => setChallenges(e.target.value)}
                   placeholder="Where did you get stuck? What frustrated you?"
-                  className="w-full h-20 bg-background-secondary border border-card-border rounded-xl px-4 py-3 text-[13px] text-foreground placeholder:text-foreground-tertiary/40 resize-none focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all"
+                  className="field-control h-20 px-4 py-3 text-[13px] resize-none"
                 />
               </div>
               <div>
@@ -110,7 +110,7 @@ export default function JournalPage() {
                   value={wins}
                   onChange={(e) => setWins(e.target.value)}
                   placeholder="What are you proud of today? Any breakthroughs?"
-                  className="w-full h-20 bg-background-secondary border border-card-border rounded-xl px-4 py-3 text-[13px] text-foreground placeholder:text-foreground-tertiary/40 resize-none focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all"
+                  className="field-control h-20 px-4 py-3 text-[13px] resize-none"
                 />
               </div>
             </div>
@@ -120,15 +120,15 @@ export default function JournalPage() {
                 <label className="text-[12px] text-foreground-secondary font-medium block mb-2">
                   Mood
                 </label>
-                <div className="flex gap-1.5">
+                <div className="segmented-control">
                   {MOODS.map((m) => (
                     <button
                       key={m}
                       onClick={() => setMood(m)}
-                      className={`px-2.5 py-1.5 text-[11px] rounded-lg transition-all duration-150 ${
+                      className={`segmented-option ${
                         mood === m
-                          ? "bg-primary/[0.15] text-primary-light border border-primary/30 shadow-sm"
-                          : "bg-card-elevated border border-card-border text-foreground-tertiary hover:text-foreground hover:border-card-border-hover"
+                          ? "segmented-option-active"
+                          : ""
                       }`}
                     >
                       {m}
@@ -140,15 +140,15 @@ export default function JournalPage() {
                 <label className="text-[12px] text-foreground-secondary font-medium block mb-2">
                   Energy (1-5)
                 </label>
-                <div className="flex gap-1">
+                <div className="segmented-control">
                   {[1, 2, 3, 4, 5].map((n) => (
                     <button
                       key={n}
                       onClick={() => setEnergy(n)}
-                      className={`w-8 h-8 rounded-lg text-[11px] font-medium transition-all duration-150 ${
+                      className={`segmented-option min-w-8 ${
                         energy === n
-                          ? "bg-primary text-white shadow-sm shadow-primary/30"
-                          : "bg-card-elevated border border-card-border text-foreground-tertiary hover:text-foreground hover:border-card-border-hover"
+                          ? "segmented-option-active"
+                          : ""
                       }`}
                     >
                       {n}
@@ -162,14 +162,14 @@ export default function JournalPage() {
               <button
                 onClick={save}
                 disabled={!entry.trim() || saving}
-                className="px-5 py-2.5 bg-primary text-white text-[13px] font-medium rounded-xl hover:bg-primary-dark transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm shadow-primary/20 hover:shadow-md hover:shadow-primary/30"
+                className="btn btn-primary"
               >
                 {saving ? "Saving..." : editing ? "Update Reflection" : "Save Today's Reflection"}
               </button>
               {editing && (
                 <button
                   onClick={() => setEditing(false)}
-                  className="px-5 py-2.5 text-[13px] font-medium text-foreground-tertiary hover:text-foreground rounded-xl border border-card-border hover:border-card-border-hover transition-all"
+                  className="btn btn-secondary"
                 >
                   Cancel
                 </button>
@@ -202,7 +202,7 @@ export default function JournalPage() {
                   }
                   setEditing(true);
                 }}
-                className="text-[11px] px-3 py-1.5 rounded-lg bg-card-elevated border border-card-border text-foreground-tertiary hover:text-foreground hover:border-card-border-hover transition-all"
+                className="btn btn-secondary !px-3 !py-1.5 !text-[11px]"
               >
                 Edit
               </button>

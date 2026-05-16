@@ -21,14 +21,14 @@ export function AchievementBadge({
     <div
       className={`card-interactive p-4 ${
         unlocked
-          ? "border-primary/20 bg-gradient-to-br from-primary/[0.04] to-transparent"
+          ? "border-primary/25 bg-gradient-to-br from-primary/[0.08] via-accent/[0.03] to-transparent"
           : "opacity-40 grayscale hover:opacity-60"
       }`}
     >
       <div className="flex items-start gap-3">
         <div
           className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-            unlocked ? "bg-primary-glow-strong" : "bg-card-elevated"
+            unlocked ? "bg-primary-glow-strong border border-primary/20 shadow-[var(--shadow-glow)]" : "bg-card-elevated border border-card-border"
           }`}
         >
           <span className="text-lg">{icon}</span>

@@ -59,15 +59,15 @@ export default function LearnPage() {
             Topics to study deeper, identified during sessions
           </p>
         </div>
-        <div className="flex gap-1.5 bg-card-elevated rounded-xl p-1 border border-card-border">
+        <div className="segmented-control">
           {["all", "pending", "in_progress", "completed"].map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 text-[11px] font-medium rounded-lg transition-all duration-150 ${
+              className={`segmented-option ${
                 filter === f
-                  ? "bg-primary text-white shadow-sm shadow-primary/20"
-                  : "text-foreground-tertiary hover:text-foreground"
+                  ? "segmented-option-active"
+                  : ""
               }`}
             >
               {f === "in_progress" ? "In Progress" : f.charAt(0).toUpperCase() + f.slice(1)}
@@ -162,7 +162,7 @@ function Section({
               {item.status === "pending" && (
                 <button
                   onClick={(e) => { e.stopPropagation(); onUpdate(item.id, "in_progress"); }}
-                  className="text-[11px] px-3.5 py-1.5 rounded-lg bg-primary/[0.08] text-primary-light border border-primary/15 hover:bg-primary/[0.15] hover:border-primary/30 transition-all font-medium"
+                  className="btn btn-primary !px-3.5 !py-1.5 !text-[11px]"
                 >
                   Start
                 </button>
@@ -170,7 +170,7 @@ function Section({
               {item.status === "in_progress" && (
                 <button
                   onClick={(e) => { e.stopPropagation(); onUpdate(item.id, "completed"); }}
-                  className="text-[11px] px-3.5 py-1.5 rounded-lg bg-success/[0.08] text-success border border-success/15 hover:bg-success/[0.15] hover:border-success/30 transition-all font-medium"
+                  className="text-[11px] px-3.5 py-1.5 rounded-lg bg-success/[0.1] text-success border border-success/20 hover:bg-success/[0.16] hover:border-success/35 transition-all font-semibold"
                 >
                   Done
                 </button>

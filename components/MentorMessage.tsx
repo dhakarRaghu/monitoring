@@ -6,13 +6,15 @@ interface MentorMessageProps {
 
 export function MentorMessage({ message }: MentorMessageProps) {
   return (
-    <div className="card p-5 flex flex-col">
+    <div className="card p-5 flex flex-col relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.06] via-transparent to-accent/[0.03] pointer-events-none" />
+      <div className="relative flex flex-col flex-1">
       <h3 className="text-[11px] font-semibold text-foreground-tertiary uppercase tracking-widest mb-3">
         Mentor Message
       </h3>
       {message ? (
         <div className="flex-1 flex items-start gap-3">
-          <div className="w-8 h-8 rounded-lg bg-primary-glow-strong flex items-center justify-center shrink-0 mt-0.5">
+          <div className="w-8 h-8 rounded-xl bg-primary-glow-strong border border-primary/20 flex items-center justify-center shrink-0 mt-0.5">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-primary-light">
               <path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z" stroke="currentColor" strokeWidth="1.75"/>
               <path d="M9 21h6M10 17v-1.5M14 17v-1.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
@@ -36,6 +38,7 @@ export function MentorMessage({ message }: MentorMessageProps) {
           </p>
         </div>
       )}
+      </div>
     </div>
   );
 }

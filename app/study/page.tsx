@@ -83,15 +83,15 @@ export default function StudyPage() {
             <span className="font-mono">{inProgressCount}</span> in progress
           </p>
         </div>
-        <div className="flex gap-1.5 bg-card-elevated rounded-xl p-1 border border-card-border">
+        <div className="segmented-control">
           {["all", "unread", "in_progress", "completed"].map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 text-[11px] font-medium rounded-lg transition-all duration-150 ${
+              className={`segmented-option ${
                 filter === f
-                  ? "bg-primary text-white shadow-sm shadow-primary/20"
-                  : "text-foreground-tertiary hover:text-foreground"
+                  ? "segmented-option-active"
+                  : ""
               }`}
             >
               {f === "in_progress"
@@ -188,7 +188,7 @@ function TopicGroup({
           <Link
             key={material.id}
             href={`/study/${material.slug}`}
-            className="flex items-center gap-4 px-4 py-3 rounded-xl border border-card-border hover:border-primary/20 hover:bg-card-elevated/50 transition-all duration-150 group"
+            className="flex items-center gap-4 px-4 py-3 rounded-xl border border-card-border hover:border-card-border-hover hover:bg-card-elevated/70 hover:-translate-y-0.5 transition-all duration-150 group"
           >
             <div className="w-7 h-7 rounded-lg bg-card-elevated flex items-center justify-center text-[11px] font-bold text-foreground-tertiary group-hover:bg-primary-glow group-hover:text-primary-light transition-all font-mono">
               {index + 1}

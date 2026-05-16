@@ -15,11 +15,11 @@ export function XPBar({ currentXp, xpToNext, level, title }: XPBarProps) {
 
   return (
     <div className="card p-5 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-transparent to-accent/[0.02]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.1] via-transparent to-accent/[0.05]" />
       <div className="relative">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-primary-glow-strong flex items-center justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-primary-glow-strong border border-primary/20 flex items-center justify-center shadow-[var(--shadow-glow)]">
               <span className="text-2xl font-bold gradient-text">{level}</span>
             </div>
             <div>
@@ -35,7 +35,7 @@ export function XPBar({ currentXp, xpToNext, level, title }: XPBarProps) {
             <p className="text-[11px] text-foreground-tertiary mt-0.5">XP to next level</p>
           </div>
         </div>
-        <div className="w-full bg-background-secondary rounded-full h-2 overflow-hidden">
+        <div className="w-full bg-background-secondary rounded-full h-2 overflow-hidden border border-card-border">
           <div
             className="progress-bar h-full rounded-full transition-all duration-1000 ease-out"
             style={{ width: `${Math.min(100, Math.max(2, progress))}%` }}

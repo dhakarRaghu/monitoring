@@ -8,10 +8,10 @@ interface StatsGridProps {
 }
 
 const STAT_CONFIG = [
-  { key: "sessions", label: "Sessions", gradient: "from-blue-500/8 to-blue-600/4", iconColor: "text-info" },
-  { key: "hours", label: "Hours", gradient: "from-emerald-500/8 to-emerald-600/4", iconColor: "text-success" },
-  { key: "days", label: "Days Active", gradient: "from-violet-500/8 to-violet-600/4", iconColor: "text-primary-light" },
-  { key: "avg", label: "Overall Avg", gradient: "from-amber-500/8 to-amber-600/4", iconColor: "text-warning" },
+  { key: "sessions", label: "Sessions", gradient: "from-primary/12 to-primary/4", iconColor: "text-primary-light" },
+  { key: "hours", label: "Hours", gradient: "from-success/12 to-success/4", iconColor: "text-success" },
+  { key: "days", label: "Days Active", gradient: "from-accent/12 to-accent/4", iconColor: "text-accent-light" },
+  { key: "avg", label: "Overall Avg", gradient: "from-warning/12 to-warning/4", iconColor: "text-warning" },
 ];
 
 export function StatsGrid({
@@ -39,11 +39,11 @@ export function StatsGrid({
       {STAT_CONFIG.map((stat) => (
         <div
           key={stat.key}
-          className="card p-4 text-center relative overflow-hidden group"
+          className="card p-4 text-center relative overflow-hidden group hover:-translate-y-0.5"
         >
           <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
           <div className="relative">
-            <div className={`w-9 h-9 mx-auto rounded-lg bg-card-elevated flex items-center justify-center mb-2.5 ${stat.iconColor}`}>
+            <div className={`w-9 h-9 mx-auto rounded-xl bg-card-elevated border border-card-border flex items-center justify-center mb-2.5 ${stat.iconColor}`}>
               {icons[stat.key]}
             </div>
             <p className="text-xl font-semibold text-foreground tracking-tight font-mono">
