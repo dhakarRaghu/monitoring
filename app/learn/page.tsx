@@ -121,9 +121,10 @@ function Section({
       <h2 className="text-sm font-medium text-muted mb-3">{title} ({items.length})</h2>
       <div className="space-y-2">
         {items.map((item) => (
-          <div
+          <Link
             key={item.id}
-            className="bg-card border border-card-border rounded-xl p-4 flex items-center justify-between"
+            href={`/learn/${getStudySlug(item.topic)}`}
+            className="bg-card border border-card-border rounded-xl p-4 flex items-center justify-between hover:border-primary/30 hover:bg-card-elevated transition-all cursor-pointer block"
           >
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
@@ -146,41 +147,30 @@ function Section({
                 <p className="text-xs text-muted mt-1">{item.reason}</p>
               )}
             </div>
-            <div className="flex gap-2 ml-4">
+            <div className="flex gap-2 ml-4" onClick={(e) => e.preventDefault()}>
               {item.status === "pending" && (
                 <button
-                  onClick={() => onUpdate(item.id, "in_progress")}
+                  onClick={(e) => { e.stopPropagation(); onUpdate(item.id, "in_progress"); }}
                   className="text-xs px-3 py-1 rounded-lg bg-accent/10 text-accent-light hover:bg-accent/20"
                 >
                   Start
                 </button>
               )}
               {item.status === "in_progress" && (
-                <>
-                  <Link
-                    href={`/learn/${getStudySlug(item.topic)}`}
-                    className="text-xs px-3 py-1 rounded-lg bg-primary/10 text-primary-light hover:bg-primary/20"
-                  >
-                    Learn
-                  </Link>
-                  <button
-                    onClick={() => onUpdate(item.id, "completed")}
-                    className="text-xs px-3 py-1 rounded-lg bg-success/10 text-success hover:bg-success/20"
-                  >
-                    Done
-                  </button>
-                </>
-              )}
-              {item.status === "completed" && (
-                <Link
-                  href={`/learn/${getStudySlug(item.topic)}`}
+                <button
+                  onClick={(e) => { e.stopPropagation(); onUpdate(item.id, "completed"); }}
                   className="text-xs px-3 py-1 rounded-lg bg-success/10 text-success hover:bg-success/20"
                 >
+                  Done
+                </button>
+              )}
+              {item.status === "completed" && (
+                <span className="text-xs px-3 py-1 rounded-lg bg-success/10 text-success">
                   Review ✓
-                </Link>
+                </span>
               )}
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
