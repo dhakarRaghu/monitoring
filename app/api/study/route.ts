@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { studyMaterials } from "@/lib/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -56,6 +56,27 @@ export async function POST(request: Request) {
     .returning();
 
   return Response.json(material, { status: 201 });
+}
+
+export async function DELETE(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const slug = searchParams.get("slug");
+  const topic = searchParams.get("topic");
+
+  if (topic) {
+    const deleted = await db
+      .delete(studyMaterials)
+      .where(sql`${studyMaterials.slug} LIKE ${topic + '%'}`)
+      .returning();
+    return Response.json({ deleted: deleted.length });
+  }
+
+  if (slug) {
+    await db.delete(studyMaterials).where(eq(studyMaterials.slug, slug));
+    return Response.json({ deleted: 1 });
+  }
+
+  return Response.json({ error: "slug or topic required" }, { status: 400 });
 }
 
 export async function PATCH(request: Request) {

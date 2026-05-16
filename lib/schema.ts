@@ -138,6 +138,19 @@ export const mentorNudges = pgTable("mentor_nudges", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const studyCourses = pgTable("study_courses", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  topic: varchar("topic", { length: 100 }).unique().notNull(),
+  title: varchar("title", { length: 200 }).notNull(),
+  totalPhases: integer("total_phases").notNull(),
+  currentPhase: integer("current_phase").default(0),
+  status: varchar("status", { length: 20 }).default("in_progress"),
+  outline: jsonb("outline").notNull(),
+  config: jsonb("config"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const dailyJournal = pgTable("daily_journal", {
   id: uuid("id").primaryKey().defaultRandom(),
   date: date("date").unique().notNull(),

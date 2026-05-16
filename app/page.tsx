@@ -1,73 +1,103 @@
-import { db } from "@/lib/db";
-import { profile, dailyReviews, unlockedAchievements, achievements } from "@/lib/schema";
-import { desc, eq } from "drizzle-orm";
+"use client";
+
+import { useEffect, useState } from "react";
 import { XPBar } from "@/components/XPBar";
 import { StreakCounter } from "@/components/StreakCounter";
 import { ScoreRadar } from "@/components/ScoreRadar";
 import { MentorMessage } from "@/components/MentorMessage";
 import { StatsGrid } from "@/components/StatsGrid";
 import { AchievementBadge } from "@/components/AchievementBadge";
-import { xpToNextLevel } from "@/lib/gamification";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-export const fetchCache = "force-no-store";
+interface ProfileData {
+  totalXp: number;
+  level: number;
+  title: string;
+  currentStreak: number;
+  longestStreak: number;
+  totalSessions: number;
+  totalHours: string;
+  startDate: string;
+  xpToNextLevel: number;
+}
 
-export default async function Dashboard() {
-  const [p] = await db.select().from(profile).limit(1);
-  const [latestReview] = await db
-    .select()
-    .from(dailyReviews)
-    .orderBy(desc(dailyReviews.date))
-    .limit(1);
+interface DailyReview {
+  categoryAvgCoreHabits: string | null;
+  categoryAvgTechnical: string | null;
+  categoryAvgGrowth: string | null;
+  categoryAvgProfessional: string | null;
+  overallAvg: string | null;
+  mentorMessage: string | null;
+}
 
-  const recentAchievements = await db
-    .select({
-      slug: unlockedAchievements.achievementSlug,
-      unlockedAt: unlockedAchievements.unlockedAt,
-      name: achievements.name,
-      icon: achievements.icon,
-      description: achievements.description,
-      xpReward: achievements.xpReward,
-    })
-    .from(unlockedAchievements)
-    .innerJoin(
-      achievements,
-      eq(unlockedAchievements.achievementSlug, achievements.slug)
-    )
-    .orderBy(desc(unlockedAchievements.unlockedAt))
-    .limit(3);
+interface Achievement {
+  slug: string;
+  name: string;
+  icon: string;
+  description: string;
+  xpReward: number;
+  unlockedAt: string;
+}
 
+export default function Dashboard() {
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [latestReview, setLatestReview] = useState<DailyReview | null>(null);
+  const [recentAchievements, setRecentAchievements] = useState<Achievement[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      fetch("/api/profile").then((r) => r.json()),
+      fetch("/api/daily").then((r) => r.json()),
+      fetch("/api/achievements").then((r) => r.json()),
+    ]).then(([profile, reviews, achievements]) => {
+      setProfileData(profile);
+      if (Array.isArray(reviews) && reviews.length > 0) {
+        setLatestReview(reviews[0]);
+      }
+      const unlocked = achievements.filter((a: { unlocked: boolean }) => a.unlocked);
+      setRecentAchievements(unlocked.slice(0, 3));
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight">Dashboard</h1>
+          <p className="text-sm text-foreground-tertiary mt-1">Loading...</p>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="col-span-2 card p-5 h-24 animate-pulse bg-card-elevated" />
+          <div className="card p-5 h-24 animate-pulse bg-card-elevated" />
+        </div>
+        <div className="grid grid-cols-4 gap-3">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="card p-4 h-24 animate-pulse bg-card-elevated" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const p = profileData;
   const totalXp = p?.totalXp || 0;
   const level = p?.level || 1;
   const title = p?.title || "Beginner";
-  const nextLevelXp = xpToNextLevel(totalXp);
+  const nextLevelXp = p?.xpToNextLevel || 100;
 
-  const now = new Date();
   const daysSinceStart = p?.startDate
     ? Math.floor(
-        (now.getTime() - new Date(p.startDate).getTime()) / (1000 * 60 * 60 * 24)
+        (new Date().getTime() - new Date(p.startDate).getTime()) / (86400000)
       )
     : 0;
 
   const radarData = latestReview
     ? [
-        {
-          area: "Core Habits",
-          score: parseFloat(latestReview.categoryAvgCoreHabits || "0"),
-        },
-        {
-          area: "Technical",
-          score: parseFloat(latestReview.categoryAvgTechnical || "0"),
-        },
-        {
-          area: "Growth",
-          score: parseFloat(latestReview.categoryAvgGrowth || "0"),
-        },
-        {
-          area: "Professional",
-          score: parseFloat(latestReview.categoryAvgProfessional || "0"),
-        },
+        { area: "Core Habits", score: parseFloat(latestReview.categoryAvgCoreHabits || "0") },
+        { area: "Technical", score: parseFloat(latestReview.categoryAvgTechnical || "0") },
+        { area: "Growth", score: parseFloat(latestReview.categoryAvgGrowth || "0") },
+        { area: "Professional", score: parseFloat(latestReview.categoryAvgProfessional || "0") },
       ]
     : [];
 
@@ -101,9 +131,7 @@ export default async function Dashboard() {
         totalSessions={p?.totalSessions || 0}
         totalHours={parseFloat(p?.totalHours || "0")}
         daysSinceStart={daysSinceStart}
-        overallAvg={
-          latestReview ? parseFloat(latestReview.overallAvg || "0") : null
-        }
+        overallAvg={latestReview ? parseFloat(latestReview.overallAvg || "0") : null}
       />
 
       <div className="grid grid-cols-2 gap-4">
@@ -124,7 +152,7 @@ export default async function Dashboard() {
                 name={a.name || ""}
                 description={a.description || ""}
                 unlocked={true}
-                unlockedAt={a.unlockedAt?.toISOString()}
+                unlockedAt={a.unlockedAt}
                 xpReward={a.xpReward || 20}
               />
             ))}

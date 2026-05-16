@@ -29,6 +29,70 @@ What makes THIS better than all of those:
 5. **Curated references** — instead of "go Google it", specific timestamps in specific videos, specific paragraphs in specific articles
 6. **Complete** — you don't need 5 other resources to fill gaps. This is the ONE document.
 
+### Rule 0.5: NARRATIVE TEACHING VOICE (NOT documentation voice)
+
+Write like a senior engineer TALKING TO the user over a whiteboard, not like a textbook. The difference:
+
+**WRONG (documentation voice):**
+```
+## 2.1 — Log Storage: Segments & Indexes
+A Kafka partition consists of segments. Each segment has a .log file...
+```
+
+**RIGHT (narrative teaching voice):**
+```
+## 2.1 — Storage layer (the file you've been talking about)
+
+Why this matters: every "weird" Kafka behaviour in production traces back to 
+one of: storage internals, replication, leader election, delivery semantics, 
+or rebalance protocol. If you don't know these from the inside, you'll 
+Stack-Overflow your way through outages.
+
+How a partition is laid out on disk:
+```
+
+Key differences:
+- **Start with WHY this section matters to the reader** ("Why this matters: ...", "The reason you need to know this: ...")
+- **Use "you" language** — speak to the reader directly
+- **Weave diagrams INTO the narrative** — not in a separate "Diagram:" section
+- **Use conversational transitions** — "Now here's where it gets interesting:", "This is the part most tutorials skip:", "Let's slow down here because this is critical:"
+- **Show the WRONG understanding first** — "You might think X. You'd be wrong. Here's why:"
+- **Connect to their production reality** — "At Mindtickle, this means...", "When you open missions-processors, you'll see..."
+- **Use inline emphasis** for the surprising parts — "Critical fact:", "Internalize this:", "The hard truth:"
+- **Make it flow** — each section should lead naturally to the next with a transition sentence
+
+### Rule 0.6: PRODUCTION ANCHORING TO MINDTICKLE
+
+Every phase MUST include specific references to the user's actual codebase and production environment. Not generic examples.
+
+Format:
+```
+🏢 Mindtickle anchor — things to check in your codebase:
+
+1. Open `missions-processors/config/config.go:42` — find where MskBrokers is set. 
+   What client library does it use? Is there a MaxPollInterval set anywhere?
+
+2. Search `devops-helm-charts/infra/team-int/workflow-events*/values-prod.yaml` 
+   for groupInstanceId. Are they using static membership? If not, that's tech debt.
+
+3. Open the AI review consumer processor — does it process synchronously in the 
+   poll loop, or hand off to workers? What does that imply about rebalances?
+```
+
+This connects theory to THEIR reality. Without this, it's just another tutorial.
+
+### Rule 0.7: MAKE EACH PHASE FEEL LIKE A SENIOR TEACHING SESSION
+
+The generated content should read like you sat down with a staff engineer for 2 hours and they taught you everything about this topic. It should have:
+
+- **Opening motivation** — Why this phase matters. What you'll be able to do after. What goes wrong if you skip this.
+- **A roadmap** at the start showing what's covered (box diagram)
+- **Deep inline explanations** — not just "the ISR shrinks" but EXACTLY what happens step by step with a timeline
+- **Multiple diagrams PER concept** — before/after, timeline, architecture, data flow
+- **"The three/five things to internalize"** — bullet points of what must stick
+- **Scenarios that ONLY production teaches** — "Your consumer group rebalances every 6 min. The handler does an LLM call. Show the math."
+- **Closing with checkpoint questions** that are SCENARIO-BASED using your systems — not generic "explain X" but "a customer reports duplicate events, what's happening?"
+
 ### Rule 1: SELF-CONTAINED
 
 The generated material MUST be readable cold — without conversation context. This means:
@@ -71,38 +135,106 @@ If the topic requires local infra (database, broker, cluster, etc.):
 - Verify commands: "run X, you should see Y"
 - All exercises assume this infra is running
 
-### Rule 6: GENERATE RUNNABLE CODE FILES
+### Rule 6: GENERATE RUNNABLE CODE FILES (PRODUCTION-GRADE EXERCISES)
 
-For every exercise that involves writing/running code:
-- Create the actual Go (or relevant language) source files
-- Save them to the learning directory: `~/Desktop/project/mindtickle/<topic>-learning/`
-- Follow the existing structure (e.g., `phase03_tuning/benchmark_producer/main.go`)
-- Every file must be:
-  - Self-contained (copy-paste-run)
-  - Have a top comment explaining WHAT it does, HOW to run it
-  - Use flags for configurability (-brokers, -topic, -count, etc.)
-  - Include proper error handling
-  - Follow production patterns, not toy code
+For EVERY phase, create actual runnable code that the user will execute to learn. This is NOT supplementary — the code IS the learning. Without running it, the theory is worthless.
 
-File structure per phase:
+**Quality bar for exercise code:**
+
+Each Go file must be:
+- **Self-contained** — `go run ./phase02_internals/idempotent_producer` works immediately
+- **Production-grade** — NOT toy code. Real error handling, real patterns, real configs
+- **Progressive** — Phase 1 code is simpler than Phase 3. By Phase 5, the user builds monitoring tools.
+- **Commented with WHY** — not `// create writer` but `// acks=all ensures data survives broker crash`
+- **Configurable via flags** — `-brokers`, `-topic`, `-count`, `-batch`, etc.
+- **Includes expected output** — top comment says "You should see: ..."
+- **Teaches ONE concept** — each file demonstrates exactly one thing from the theory
+
+**What code to generate per phase:**
+
 ```
-<topic>-learning/
+Phase 0: No code (framing only)
+
+Phase 1: Basic producer + consumer (hello-world, partition routing, group behavior)
+  - producer/main.go         → send messages with keys, observe partition routing
+  - consumer/main.go         → consume in a group, see partition assignment
+  
+Phase 2: Internals exploration tools
+  - idempotent_producer/main.go  → demonstrate dedup with sequence numbers
+  - dedupe_consumer/main.go      → Redis-based idempotent consumer pattern
+  - explore_storage.sh           → script to dump segments, indexes
+  - leader_kill_test/main.go     → produce while killing brokers, verify zero loss
+
+Phase 3: Tuning & benchmarks
+  - benchmark_producer/main.go   → measure throughput with different batch/linger configs
+  - compression_test/main.go     → compare snappy/lz4/zstd throughput + disk usage
+  - backpressure_consumer/main.go → bounded worker pool, demonstrate lag under load
+  - dlq_consumer/main.go         → dead-letter queue pattern with retry + poison pill handling
+  - manual_commit/main.go        → at-least-once with explicit offset management
+
+Phase 4: Ecosystem integration
+  - stream_processor/main.go     → Go equivalent of Kafka Streams (consume-aggregate-produce)
+  - schema_producer/main.go      → produce with schema validation (Avro/JSON Schema)
+  - connect_setup/docker-compose.yml → Schema Registry + Connect cluster setup
+  - mirror_test/docker-compose.yml   → 2-cluster MirrorMaker 2 setup
+
+Phase 5: Production tooling
+  - lag_monitor/main.go          → real-time consumer lag monitoring with alerting
+  - partition_rebalancer/main.go → tool to reassign partitions across brokers
+  - capacity_calculator/main.go  → calculate required partitions/brokers for a workload
+  - health_checker/main.go       → check cluster health (ISR, under-replicated, controller)
+
+Phase 6: Advanced patterns
+  - outbox_relay/main.go         → outbox pattern: DB + outbox → relay → Kafka
+  - saga_orchestrator/main.go    → saga pattern for distributed transactions
+  - cdc_consumer/main.go         → CDC event processing (Debezium format)
+  - event_sourcer/main.go        → event sourcing: append events, rebuild state
+```
+
+**File structure:**
+```
+/Users/raghvendradhakar/Desktop/code/verly/study-material/<topic>/code/
+├── go.mod
+├── docker-compose.yml                  (base infra)
+├── docker-compose.cluster.yml          (multi-broker)
+├── phase01_mental_model/
+│   ├── producer/main.go
+│   └── consumer/main.go
+├── phase02_internals/
+│   ├── idempotent_producer/main.go
+│   ├── dedupe_consumer/main.go
+│   ├── leader_kill_test/main.go
+│   └── explore_storage.sh
 ├── phase03_tuning/
-│   ├── README.md
 │   ├── benchmark_producer/main.go
 │   ├── compression_test/main.go
-│   ├── transactional_producer/main.go
+│   ├── backpressure_consumer/main.go
 │   ├── dlq_consumer/main.go
-│   └── backpressure/main.go
-├── phase04_ecosystem/
-│   ├── README.md
-│   ├── docker-compose.schema-registry.yml
-│   ├── stream_processor/main.go
-│   └── avro_producer/main.go
+│   └── manual_commit/main.go
 ...
 ```
 
-The study material references these files: "Run: `go run ./phase03_tuning/benchmark_producer -count=10000`"
+**The study material MUST reference these files directly:**
+```
+- [ ] **E5.** Run the backpressure consumer against a fast producer.
+  - Start fast producer: `go run ./phase03_tuning/benchmark_producer -count=50000 -batch=1000`
+  - Start slow consumer: `go run ./phase03_tuning/backpressure_consumer -concurrency=3 -process-time=500ms`
+  - Watch lag grow: `kafka-consumer-groups.sh --describe --group backpressure-demo`
+  - Expected: consumer processes at ~6 msg/s, lag grows until producer stops
+  - Teaches: what happens when consumers can't keep up
+```
+
+**After generating code, save to DB:**
+
+After writing the Go files, ALSO update the study material entry in the database with a note about which code files exist for this phase:
+
+```bash
+curl -X PATCH https://raghu-monitoring.vercel.app/api/study \
+  -H "Content-Type: application/json" \
+  -d '{"slug": "<phase-slug>", "progress": 0, "status": "unread"}'
+```
+
+This ensures the dashboard reflects that the phase has runnable exercises available.
 
 ---
 
@@ -261,55 +393,85 @@ Quality rules for references:
 
 ---
 
-## Content Structure
+## Content Structure (Per Phase)
 
-For any topic, organize as:
+Each phase should feel like a 2-hour senior engineer teaching session. Structure:
 
 ```
-## 1. Why does {TOPIC} exist?
-   (Problem it solves, what came before, the core insight. 
-    Include: year created, who created it, the original paper/blog if famous.)
+# Phase N — [Title] (the [adjective] phase)
 
-## 2. Core Mental Model
-   (The 3-7 concepts you MUST understand. Diagram for EACH.
-    This section alone should let you pass a basic interview question.)
+[Opening paragraph: why this phase matters, what you'll be able to do after, 
+what goes wrong in production if you skip this. Make it motivating.]
 
-## 3. How it works internally
-   (What actually happens under the hood. Storage, protocols, algorithms.
-    Include: what data structure, what syscalls, what wire format.
-    This is where most tutorials stop — go DEEPER.)
+Time: X–Y weeks. Don't rush. The exercises are non-negotiable here.
 
-## 4. Real-world patterns
-   (3-5 production patterns with full code examples.
-    Name each pattern. Show the WRONG way first for at least 2.)
+## What we cover in Phase N:
+┌─────────────────────────────────────────────────────────────────┐
+│  N.1  [Topic A]        — [one-line what it covers]              │
+│  N.2  [Topic B]        — [one-line]                             │
+│  N.3  [Topic C]        — [one-line]                             │
+│  N.4  [Topic D]        — [one-line]                             │
+└─────────────────────────────────────────────────────────────────┘
 
-## 5. Configuration & Tuning
-   (Key knobs with EXACT names, defaults, and the math behind tuning.
-    Include a "tuning for YOUR workload" decision tree.)
+---
 
-## 6. Common pitfalls & debugging
-   (Things that bite everyone. For each:
-    - Symptom: what you observe
-    - Root cause: why it happens
-    - Fix: what to change
-    - Prevention: how to avoid it entirely)
+## N.1 — [Topic A] (conversational subtitle)
 
-## 7. When to use vs NOT use
-   (Decision criteria with comparison table.
-    Include at least one "you think you need X but you actually need Y" scenario.)
+[WHY this matters — 2-3 sentences connecting to production reality]
 
-## 8. Exercises
-   (7-12 hands-on, verifiable exercises. Include setup if needed.)
+[DIAGRAM — inline, woven into the narrative, not a separate block]
 
-## 9. Checkpoint Questions
-   (5-7 questions testing deep understanding. Include answers hidden in expandable section or separate file.)
+[EXPLANATION — flowing paragraphs with inline emphasis, using "you" language.
+ Multiple sub-concepts each with their own mini-diagram.]
 
-## 10. References & Further Learning
-   (Curated list of THE BEST resources. See format below.)
+[Code example — production-grade, with inline comments explaining WHY]
 
-## 11. Cheatsheet
-   (One-page quick reference. The thing you keep open in a terminal tab.)
+**The sentence to remember:** ...
+**The trap:** ...
+**Three things to internalize:** (bullet list)
+
+---
+
+## N.2 — [Topic B] (conversational subtitle)
+[Same pattern... each section flows into the next]
+
+---
+
+## 🧪 Hands-on lab — the exercises that teach Phase N
+
+[7-12 exercises, each with:]
+- [ ] **E1.** [Description] 
+  - Run: `exact command`
+  - Watch: what to observe
+  - Verify: how to confirm it worked
+  - Teaches: one specific concept
+
+---
+
+## 🏢 Mindtickle anchor — things to check in the codebase
+
+[2-4 specific file paths and questions connecting to their production code]
+
+---
+
+## ✅ Checkpoint N — answer in your own words
+
+[5-7 scenario-based questions using THEIR systems:
+ "Your consumer does an LLM call (25s). max.poll.records is default.
+  Show the math. Propose two fixes."
+ 
+ NOT generic: "Explain what a consumer group is."]
+
+---
+
+## References
+[Curated best resources with timestamps and focus areas]
+
+## Cheatsheet
+[One-page quick reference]
 ```
+
+**The key difference from documentation:** Every section starts with WHY it matters, uses narrative voice, weaves diagrams into the flow (not as separate blocks), and connects EVERY concept to the user's production reality at Mindtickle.
 
 ---
 
@@ -357,15 +519,21 @@ curl -X POST https://raghu-monitoring.vercel.app/api/study \
 ## DO vs DO NOT
 
 ### DO:
+- Write in NARRATIVE voice — like a senior talking to you, NOT like documentation
+- Start every section with WHY it matters to production
+- Weave diagrams INTO the narrative flow (not separate "Diagram:" blocks)
+- Use "you" language: "Here's where it gets interesting", "This is the part that'll bite you"
+- Show MULTIPLE diagrams per concept (before/after, timeline, architecture)
 - Every diagram must be CORRECT (numbers, sequences, states must make sense)
 - Every code example must COMPILE and RUN
 - Every explanation must answer "why does this matter in production?"
-- Call out counterintuitive things explicitly
+- Call out counterintuitive things: "This surprises most people:", "Critical fact:"
 - Show wrong way first, then right way
 - Use tables for ALL comparisons (with real numbers, not vague "high/low")
-- Use timelines for ALL sequences (with t=0, t=1 format)
+- Use timelines for ALL sequences (with t=0, t=1, t=2 format showing exact seconds)
 - Include "the one sentence to remember" per concept
-- Include "the trap to avoid" per concept
+- Include "the trap to avoid" per concept  
+- Include "Three things to internalize:" bullet list for complex concepts
 - Include "try this now" per concept
 - Include exact config names with defaults (`max.poll.interval.ms=300000`)
 - Show the MATH when there's a formula (throughput = batch_size / linger_ms)
@@ -373,6 +541,9 @@ curl -X POST https://raghu-monitoring.vercel.app/api/study \
 - Name patterns explicitly ("this is the Outbox Pattern", "this is fan-out")
 - Include docker-compose or setup for anything that needs local infra
 - Show what failure LOOKS like (logs, metrics, error output) not just describe it
+- Connect EVERY major concept to Mindtickle's production code with specific file paths
+- Use transitions between sections: "Now that you understand X, here's why Y matters..."
+- Include "Internalize:" callouts for the core truths that everything builds on
 
 ### DO NOT:
 - Don't write walls of text without diagrams (max 5 paragraphs before a diagram or code block)
@@ -391,7 +562,7 @@ curl -X POST https://raghu-monitoring.vercel.app/api/study \
 
 ---
 
-## FULL EXAMPLE (reference for tone, depth, and format)
+## FULL EXAMPLE — THIS IS THE QUALITY BAR (match this EXACTLY)
 
 ```markdown
 ## 2.3 — Leader Election (what happens when a broker dies)
@@ -480,38 +651,116 @@ transactions.
 
 ---
 
-## GENERATION MODE — ALWAYS FULL COURSE
+## GENERATION MODE — ONE PHASE AT A TIME, MAXIMUM DEPTH
 
-Every `/study <topic>` generates the COMPLETE course — all phases, all content, all exercises, all references. This is a ONE-TIME creation. Don't ask "do you want focused or full?" — always generate EVERYTHING.
+**WHY:** Generating 7 phases at once = 10% effort per phase = tutorial-quality, not staff-engineer-quality. Generating ONE phase with 100% focus = the depth and quality of a 2-hour teaching session.
 
-### Generation flow:
-1. **Phase 0** — Frame the problem (why it exists, history, the core insight)
-2. **Phase 1** — Core mental model (the 5-7 concepts + diagrams + first exercises)
-3. **Phase 2** — Internals (how it ACTUALLY works under the hood)
-4. **Phase 3** — Tuning & optimization (configs, benchmarks, math)
-5. **Phase 4** — Ecosystem & integration (adjacent tools, patterns)
-6. **Phase 5** — Production & operations (monitoring, alerting, debugging, capacity)
-7. **Phase 6** — Senior design (when to use/not use, alternatives, system design exercises)
+### How it works:
 
-For EACH phase, generate the full 11-section structure (why → mental model → internals → patterns → tuning → pitfalls → alternatives → exercises → checkpoint → references → cheatsheet).
+### Step 0: Check if course already exists (ALWAYS do this first)
+
+```bash
+curl -s "https://raghu-monitoring.vercel.app/api/courses?topic=<topic>"
+```
+
+- If it returns a course → read `currentPhase` to know where to resume. Skip outline, generate the next phase.
+- If it returns null → this is a new course. Create outline first.
+
+### Step 1: First invocation (`/study <topic>`) — Create outline
+
+Design the full course outline and SAVE it to the DB:
+
+```bash
+curl -X POST https://raghu-monitoring.vercel.app/api/courses \
+  -H "Content-Type: application/json" \
+  -d '{
+    "topic": "<topic>",
+    "title": "<Full Course Title>",
+    "totalPhases": 7,
+    "currentPhase": -1,
+    "outline": [
+      {"phase": 0, "title": "Frame the Problem", "subtitle": "...", "status": "pending", "estimatedMinutes": 30},
+      {"phase": 1, "title": "Core Mental Model", "subtitle": "...", "status": "pending", "estimatedMinutes": 45},
+      {"phase": 2, "title": "Internals", "subtitle": "...", "status": "pending", "estimatedMinutes": 60},
+      {"phase": 3, "title": "Tuning & Optimization", "subtitle": "...", "status": "pending", "estimatedMinutes": 50},
+      {"phase": 4, "title": "Ecosystem & Integration", "subtitle": "...", "status": "pending", "estimatedMinutes": 55},
+      {"phase": 5, "title": "Production & Operations", "subtitle": "...", "status": "pending", "estimatedMinutes": 60},
+      {"phase": 6, "title": "Senior Design", "subtitle": "...", "status": "pending", "estimatedMinutes": 65}
+    ],
+    "config": {
+      "language": "Go",
+      "codeDir": "/Users/raghvendradhakar/Desktop/code/verly/study-material/<topic>/code/",
+      "materialDir": "/Users/raghvendradhakar/Desktop/code/verly/study-material/<topic>/"
+    }
+  }'
+```
+
+Tell user: "Outline saved. Say 'next' to generate Phase 0."
+
+### Step 2: Each subsequent invocation (`next`)
+
+1. **Query the course** to find `currentPhase`:
+```bash
+curl -s "https://raghu-monitoring.vercel.app/api/courses?topic=<topic>"
+```
+
+2. **Generate the NEXT phase** (currentPhase + 1) with 100% focus and depth
+   - This single phase = 30-50KB of content
+   - Every diagram, timeline, code block matters
+   - Connect to Mindtickle codebase
+   - Dedicate your ENTIRE response to this one phase
+
+3. **Save the content file** to disk
+
+4. **Save to study materials DB:**
+```bash
+curl -X POST https://raghu-monitoring.vercel.app/api/study \
+  -H "Content-Type: application/json" \
+  -d '{...phase content...}'
+```
+
+5. **Update course progress:**
+```bash
+curl -X PATCH https://raghu-monitoring.vercel.app/api/courses \
+  -H "Content-Type: application/json" \
+  -d '{
+    "topic": "<topic>",
+    "currentPhase": <N>,
+    "outline": [... update this phase status to "completed" ...]
+  }'
+```
+
+6. Tell user: "Phase N done. Say 'next' for Phase N+1."
+
+### Step 3: Resuming in a NEW session
+
+When user says `/study kafka next` or just "continue kafka":
+1. Query `GET /api/courses?topic=kafka`
+2. Read `currentPhase` (e.g., 2 = Phase 0, 1, 2 are done)
+3. Generate Phase 3 (currentPhase + 1)
+4. Claude does NOT need conversation history — the DB tracks everything
+
+This means: **no progress is ever lost between sessions.**
+
+### Quality target per phase:
+- 30-50 KB of content (not 20KB surface-level, not 80KB padded)
+- 8-15 ASCII diagrams (inline, not separate blocks)
+- 3-5 Go code examples (production-grade, runnable)
+- 7-12 exercises (with exact commands and expected output)
+- 5-7 checkpoint questions (scenario-based, using their systems)
+- 2-4 Mindtickle production anchors (specific file paths)
+- Curated references (web-searched, real URLs with timestamps)
 
 ### File output:
-Save EACH phase as a separate file:
+Save each phase to:
 ```
-study-materials/<topic>-phase-00-framing.md
-study-materials/<topic>-phase-01-mental-model.md
-study-materials/<topic>-phase-02-internals.md
-study-materials/<topic>-phase-03-tuning.md
-study-materials/<topic>-phase-04-ecosystem.md
-study-materials/<topic>-phase-05-production.md
-study-materials/<topic>-phase-06-design.md
-study-materials/<topic>-cheatsheet.md
+/Users/raghvendradhakar/Desktop/code/verly/study-material/<topic>/<topic>-phase-0N-<name>.md
 ```
 
-Also save a single combined entry to the database with the full content.
+Also save to DB via API.
 
-### Generate ONE phase at a time in conversation:
-Output Phase 0 first. Then say "Phase 0 complete. Generating Phase 1..." and continue. Don't wait for user confirmation — just keep going until all phases are done. The user said this is a one-time creation.
+### The rule: NEVER sacrifice depth for breadth.
+One amazing phase > three mediocre phases. If generating one phase takes the full conversation, that's FINE. Quality over speed.
 
 ---
 
