@@ -61,6 +61,9 @@ export async function PATCH(request: Request) {
   if (body.currentPhase !== undefined) updateData.currentPhase = body.currentPhase;
   if (body.status) updateData.status = body.status;
   if (body.outline) updateData.outline = body.outline;
+  if (body.config !== undefined) updateData.config = body.config;
+  if (body.title) updateData.title = body.title;
+  if (body.totalPhases !== undefined) updateData.totalPhases = body.totalPhases;
 
   const [updated] = await db
     .update(studyCourses)

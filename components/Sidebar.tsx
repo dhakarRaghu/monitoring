@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: DashboardIcon },
+  { href: "/roadmap", label: "Roadmap", icon: RoadmapIcon },
   { href: "/journal", label: "Journal", icon: JournalIcon },
   { href: "/daily", label: "Daily Log", icon: CalendarIcon },
   { href: "/trends", label: "Trends", icon: TrendIcon },
@@ -154,6 +155,16 @@ function GraduateIcon({ active }: { active: boolean }) {
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className={`transition-colors ${active ? "text-white" : "text-foreground-tertiary group-hover:text-foreground-secondary"}`}>
       <path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
       <path d="M6 12v5c3 3 9 3 12 0v-5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+function RoadmapIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className={`transition-colors ${active ? "text-white" : "text-foreground-tertiary group-hover:text-foreground-secondary"}`}>
+      <path d="M3 6l3-3 3 3M6 3v12" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M21 18l-3 3-3-3M18 21V9" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M9 18h3a3 3 0 003-3v-6a3 3 0 00-3-3H9" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
 }
