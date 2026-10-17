@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { studyMaterials } from "@/lib/schema";
-import { desc, eq, ne, sql } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, ne, sql, type SQL } from "drizzle-orm";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -17,20 +17,25 @@ export async function GET(request: Request) {
   }
 
   const excludeSource = searchParams.get("excludeSource");
+  // lite=1 leaves out the document text, for list pages that show only titles.
+  const lite = searchParams.get("lite") === "1";
 
-  let query = db.select().from(studyMaterials);
+  // Every filter applies together. Chained .where() calls replaced each other,
+  // so status dropped excludeSource.
+  const filters: SQL[] = [];
+  if (excludeSource) filters.push(ne(studyMaterials.source, excludeSource));
+  if (status) filters.push(eq(studyMaterials.status, status));
+  if (category) filters.push(eq(studyMaterials.category, category));
 
-  if (excludeSource) {
-    query = query.where(ne(studyMaterials.source, excludeSource)) as typeof query;
-  }
-  if (status) {
-    query = query.where(eq(studyMaterials.status, status)) as typeof query;
-  }
-  if (category) {
-    query = query.where(eq(studyMaterials.category, category)) as typeof query;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { content, sections, ...listColumns } = getTableColumns(studyMaterials);
+  const base = lite ? db.select(listColumns) : db.select();
 
-  const materials = await query.orderBy(desc(studyMaterials.createdAt)).limit(100);
+  // No row limit. A limit of 100 hid every course past the newest 100 documents.
+  const materials = await base
+    .from(studyMaterials)
+    .where(filters.length ? and(...filters) : undefined)
+    .orderBy(desc(studyMaterials.createdAt));
   return Response.json(materials);
 }
 
